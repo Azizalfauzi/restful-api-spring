@@ -32,7 +32,7 @@ Response body (Failed):
 
 ## Login user
 
-Endpoint : POST /api/auth.login
+Endpoint : POST /api/auth/login
 
 Request body :
 
@@ -62,8 +62,29 @@ Response body (Failed,401):
 }      
 ```
 
-## Update user
-
 ## Get user
+
+Endpoint : GET /api/users/current
+
+Response body (Success):
+
+```json
+{
+  "data": {
+    "username": "zuha",
+    "name": "Aziz Alfauzi"
+  }
+}      
+```
+
+Response body (Failed,401):
+
+```json
+{
+  "errors": "Unauthorized"
+}      
+```
+
+## Update user
 
 ## Logout user
