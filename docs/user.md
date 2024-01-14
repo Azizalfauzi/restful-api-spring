@@ -66,6 +66,10 @@ Response body (Failed,401):
 
 Endpoint : GET /api/users/current
 
+Request header :
+
+X-API-TOKEN : Token (Mandatory)
+
 Response body (Success):
 
 ```json
@@ -87,4 +91,50 @@ Response body (Failed,401):
 
 ## Update user
 
+Endpoint : PATCH /api/users/current
+
+Request header :
+
+X-API-TOKEN : Token (Mandatory)
+
+Request body (Parsial):
+
+```json
+{
+  "name": "Aziz Alfa",
+  "password": "test231"
+}      
+```
+
+Response body (Success):
+
+```json
+{
+  "data": {
+    "username": "zuha",
+    "name": "Aziz Alfauzi"
+  }
+}      
+```
+
+Response body (Failed,401):
+
+```json
+{
+  "errors": "Unauthorized"
+}      
+```
+
 ## Logout user
+
+Endpoint : DELETE /api/users/current
+
+Request header :
+
+X-API-TOKEN : Token (Mandatory)
+
+```json
+{
+  "data": "Ok"
+}      
+```
