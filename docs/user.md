@@ -26,12 +26,41 @@ Response body (Failed):
 
 ```json
 {
-  "data": "KO",
   "errors": "username must not blank"
 }      
 ```
 
 ## Login user
+
+Endpoint : POST /api/auth.login
+
+Request body :
+
+```json
+{
+  "username": "zuha",
+  "password": "test123"
+}      
+```
+
+Response body (Success):
+
+```json
+{
+  "data": {
+    "token": "token",
+    "expiredAt": 123121213
+  }
+}      
+```
+
+Response body (Failed,401):
+
+```json
+{
+  "errors": "username or password is wrong"
+}      
+```
 
 ## Update user
 
