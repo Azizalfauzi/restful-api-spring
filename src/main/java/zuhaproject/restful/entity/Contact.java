@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,4 +33,8 @@ public class Contact {
     @JoinColumn(name = "username", referencedColumnName = "username")
     private User user;
 
+
+    @OneToMany
+    @JoinColumn(name = "contact_id", referencedColumnName = "id")
+    private List<Address> addresses;
 }
