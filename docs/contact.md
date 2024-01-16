@@ -22,6 +22,7 @@ Response Body (Success) :
 ```json
 {
   "data": {
+    "ic": "random string",
     "firstName": "Aziz",
     "lastName": "Alfa",
     "email": "aziz@gmail.com",
@@ -41,7 +42,7 @@ Response Body (Failed) :
 
 
 ## Update Contact
-Endpoint :
+Endpoint : PUT /api/contacts/{idContact}
 
 Request header :
 
@@ -49,9 +50,36 @@ X-API-TOKEN : Token (Mandatory)
 
 Request Body :
 
+```json
+{
+  "firstName": "Aziz",
+  "lastName": "Alfa",
+  "email": "aziz@gmail.com",
+  "phone": "082332"
+}    
+```
+
 Response Body (Success) :
 
+```json
+{
+  "data": {
+    "ic": "random string",
+    "firstName": "Aziz",
+    "lastName": "Alfa",
+    "email": "aziz@gmail.com",
+    "phone": "082332"
+  }
+}    
+```
+
 Response Body (Failed) :
+
+```json
+{
+  "errors": "Email format invalid,phone format invalid, ..."
+}    
+```
 
 
 ## Get Contact
