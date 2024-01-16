@@ -119,28 +119,57 @@ Response body (Failed):
 
 ## Remove Address
 
-Endpoint :
+Endpoint : DELETE /api/contacts/{idContact}/addresses/{idAddress}
 
 Request header :
 
 X-API-TOKEN : Token (Mandatory)
 
-Request body :
-
 Response body (Success):
 
+```json
+{
+  "data": "Ok"
+}
+```
+
 Response body (Failed):
+
+```json
+{
+  "data": "Address not found"
+}
+```
 
 ## List Address
 
-Endpoint :
+Endpoint : GET /api/contacts/{idContact}/addresses
 
 Request header :
 
 X-API-TOKEN : Token (Mandatory)
 
-Request body :
 
 Response body (Success):
+```json
+{
+  "data": [
+    {
+      "id": "random string",
+      "street": "Jl.Papandayan",
+      "city": "Tulungagung",
+      "province": "Jawa",
+      "country": "Indo",
+      "postalCode": "1234321"
+    }
+  ]
+}
+```
 
 Response body (Failed):
+
+```json
+{
+  "data": "Contact not found"
+}
+```
