@@ -83,17 +83,33 @@ Response Body (Failed) :
 
 
 ## Get Contact
-Endpoint :
+Endpoint : GET /api/contacts/{idContact}
 
 Request header :
 
 X-API-TOKEN : Token (Mandatory)
 
-Request Body :
-
 Response Body (Success) :
 
-Response Body (Failed) :
+```json
+{
+  "data": {
+    "ic": "random string",
+    "firstName": "Aziz",
+    "lastName": "Alfa",
+    "email": "aziz@gmail.com",
+    "phone": "082332"
+  }
+}    
+```
+
+Response Body (Failed,404) :
+
+```json
+{
+  "errors": "Contact is not found"
+}    
+```
 
 
 ## Search Contact
@@ -111,14 +127,22 @@ Response Body (Failed) :
 
 
 ## Remove Contact
-Endpoint :
+Endpoint :DELETE /api/contacts/{idContact}
 
 Request header :
 
 X-API-TOKEN : Token (Mandatory)
 
-Request Body :
-
 Response Body (Success) :
+```json
+{
+  "data": "Ok"
+}    
+```
 
 Response Body (Failed) :
+```json
+{
+  "errors": "Contact is not found"
+}    
+```
