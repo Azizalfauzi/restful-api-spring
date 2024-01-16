@@ -127,7 +127,7 @@ Response body (Failed,401):
 
 ## Logout user
 
-Endpoint : DELETE /api/users/current
+Endpoint : DELETE /api/auth/logout
 
 Request header :
 
