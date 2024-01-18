@@ -14,7 +14,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(path = "/api/users", consumes = MediaType.APPLICATION_JSON_VALUE
+    @PostMapping(path = "/api/users"
+            , consumes = MediaType.APPLICATION_JSON_VALUE
             , produces = MediaType.APPLICATION_JSON_VALUE)
     public WebResponse<String> register(@RequestBody RegisterUserRequest request) {
         userService.register(request);

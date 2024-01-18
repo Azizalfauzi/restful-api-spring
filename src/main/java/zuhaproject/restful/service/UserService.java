@@ -4,10 +4,11 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import zuhaproject.restful.entity.User;
-import zuhaproject.restful.exception.ApiException;
 import zuhaproject.restful.model.RegisterUserRequest;
 import zuhaproject.restful.repository.UserRepository;
 import zuhaproject.restful.security.BCrypt;
@@ -31,7 +32,7 @@ public class UserService {
             throw new ConstraintViolationException(constraintViolations);
         }
         if (userRepository.existsById(request.getUsername())) {
-            throw new ApiException("Username already registered!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already registered!");
         }
         User user = new User();
         user.setUsername(request.getUsername());
