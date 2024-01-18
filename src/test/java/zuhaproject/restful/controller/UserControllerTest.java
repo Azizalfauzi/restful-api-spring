@@ -10,9 +10,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import zuhaproject.restful.entity.User;
 import zuhaproject.restful.model.RegisterUserRequest;
 import zuhaproject.restful.model.WebResponse;
 import zuhaproject.restful.repository.UserRepository;
+import zuhaproject.restful.security.BCrypt;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.MockMvcBuilder.*;
@@ -61,6 +63,30 @@ class UserControllerTest {
         request.setUsername("");
         request.setPassword("");
         request.setName("");
+
+        mockMvc.perform(post("/api/users")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpectAll(status().isBadRequest()).andDo(result -> {
+                    WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    Assertions.assertNotNull(response.getErrors());
+                });
+    }
+    @Test
+    void testRegisterDuplicate() throws Exception {
+        User user = new User();
+        user.setName("Beta");
+        user.setUsername("beta123");
+        user.setPassword(BCrypt.hashpw("rahasia",BCrypt.gensalt()));
+        userRepository.save(user);
+
+
+        RegisterUserRequest request = new RegisterUserRequest();
+        request.setUsername("beta123");
+        request.setPassword("rahasia");
+        request.setName("Beta");
 
         mockMvc.perform(post("/api/users")
                         .accept(MediaType.APPLICATION_JSON)
