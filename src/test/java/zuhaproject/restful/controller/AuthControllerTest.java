@@ -10,9 +10,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import zuhaproject.restful.entity.User;
 import zuhaproject.restful.model.LoginUserRequest;
 import zuhaproject.restful.model.WebResponse;
 import zuhaproject.restful.repository.UserRepository;
+import zuhaproject.restful.security.BCrypt;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.MockMvcBuilder.*;
@@ -43,6 +45,28 @@ class AuthControllerTest {
         LoginUserRequest request = new LoginUserRequest();
         request.setUsername("test");
         request.setPassword("test");
+        mockMvc.perform(post("/api/auth/login").
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        content(objectMapper.writeValueAsString(request)))
+                .andExpectAll(status().isUnauthorized()).andDo(result -> {
+                    WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    Assertions.assertNotNull(response.getErrors());
+                });
+    }
+
+    @Test
+    void loginFailedUserWrongPassword() throws Exception {
+        User user = new User();
+        user.setName("test");
+        user.setUsername("test");
+        user.setPassword(BCrypt.hashpw("test", BCrypt.gensalt()));
+        userRepository.save(user);
+
+        LoginUserRequest request = new LoginUserRequest();
+        request.setUsername("test");
+        request.setPassword("hello");
         mockMvc.perform(post("/api/auth/login").
                         accept(MediaType.APPLICATION_JSON).
                         contentType(MediaType.APPLICATION_JSON).
