@@ -147,4 +147,25 @@ class UserControllerTest {
                 });
         ;
     }
+
+    @Test
+    void getUserTokenExpired() throws Exception {
+        User user = new User();
+        user.setUsername("test");
+        user.setName("test");
+        user.setToken("test");
+        user.setPassword(BCrypt.hashpw("rahasia", BCrypt.gensalt()));
+        user.setTokenExpiredAt(System.currentTimeMillis() - 1000000L);
+        userRepository.save(user);
+
+        mockMvc.perform(get("/api/users/current").
+                        accept(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "test")).
+                andExpectAll(status().isUnauthorized()).andDo(result -> {
+                    WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    Assertions.assertNotNull(response.getErrors());
+                });
+        ;
+    }
 }
