@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import zuhaproject.restful.entity.User;
 import zuhaproject.restful.model.RegisterUserRequest;
+import zuhaproject.restful.model.UserReponse;
 import zuhaproject.restful.repository.UserRepository;
 import zuhaproject.restful.security.BCrypt;
 
@@ -38,5 +39,11 @@ public class UserService {
         user.setName(request.getName());
 
         userRepository.save(user);
+    }
+
+    public UserReponse get(User user) {
+        return UserReponse.builder().
+                username(user.getName()).
+                name(user.getName()).build();
     }
 }
