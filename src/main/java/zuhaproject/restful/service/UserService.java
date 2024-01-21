@@ -43,7 +43,7 @@ public class UserService {
 
     public UserReponse get(User user) {
         return UserReponse.builder().
-                username(user.getName()).
+                username(user.getUsername()).
                 name(user.getName()).build();
     }
 }

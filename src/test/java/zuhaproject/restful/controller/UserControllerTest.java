@@ -74,12 +74,13 @@ class UserControllerTest {
                     Assertions.assertNotNull(response.getErrors());
                 });
     }
+
     @Test
     void testRegisterDuplicate() throws Exception {
         User user = new User();
         user.setName("Beta");
         user.setUsername("beta123");
-        user.setPassword(BCrypt.hashpw("rahasia",BCrypt.gensalt()));
+        user.setPassword(BCrypt.hashpw("rahasia", BCrypt.gensalt()));
         userRepository.save(user);
 
 
@@ -97,5 +98,18 @@ class UserControllerTest {
                     });
                     Assertions.assertNotNull(response.getErrors());
                 });
+    }
+
+    @Test
+    void getUserUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/users/current").
+                        accept(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "notfound")).
+                andExpectAll(status().isUnauthorized()).andDo(result -> {
+                    WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    Assertions.assertNotNull(response.getErrors());
+                });
+        ;
     }
 }
