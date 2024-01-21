@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import zuhaproject.restful.entity.User;
 import zuhaproject.restful.model.RegisterUserRequest;
+import zuhaproject.restful.model.UserReponse;
 import zuhaproject.restful.model.WebResponse;
 import zuhaproject.restful.repository.UserRepository;
 import zuhaproject.restful.security.BCrypt;
@@ -121,6 +122,28 @@ class UserControllerTest {
                     WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
                     });
                     Assertions.assertNotNull(response.getErrors());
+                });
+        ;
+    }
+
+    @Test
+    void getUserSuccess() throws Exception {
+        User user = new User();
+        user.setUsername("test");
+        user.setName("test");
+        user.setToken("test");
+        user.setPassword(BCrypt.hashpw("rahasia", BCrypt.gensalt()));
+        user.setTokenExpiredAt(System.currentTimeMillis() + 1000000L);
+        userRepository.save(user);
+
+        mockMvc.perform(get("/api/users/current").
+                        accept(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "test")).
+                andExpectAll(status().isOk()).andDo(result -> {
+                    WebResponse<UserReponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    Assertions.assertEquals("test", response.getData().getUsername());
+                    Assertions.assertEquals("test", response.getData().getName());
                 });
         ;
     }

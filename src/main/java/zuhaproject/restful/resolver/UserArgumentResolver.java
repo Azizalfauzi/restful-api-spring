@@ -13,6 +13,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.server.ResponseStatusException;
 import zuhaproject.restful.entity.User;
 import zuhaproject.restful.repository.UserRepository;
+
 @Component
 @Slf4j
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
@@ -34,6 +35,10 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         }
         User user = userRepository.findFirstByToken(token)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+
+        if (user.getTokenExpiredAt() < System.currentTimeMillis()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
 
         return user;
     }
