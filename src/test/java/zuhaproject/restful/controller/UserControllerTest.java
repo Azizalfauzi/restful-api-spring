@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import zuhaproject.restful.entity.User;
 import zuhaproject.restful.model.RegisterUserRequest;
+import zuhaproject.restful.model.UpdateUserRequest;
 import zuhaproject.restful.model.UserReponse;
 import zuhaproject.restful.model.WebResponse;
 import zuhaproject.restful.repository.UserRepository;
@@ -161,6 +162,21 @@ class UserControllerTest {
         mockMvc.perform(get("/api/users/current").
                         accept(MediaType.APPLICATION_JSON).
                         header("X-API-TOKEN", "test")).
+                andExpectAll(status().isUnauthorized()).andDo(result -> {
+                    WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    Assertions.assertNotNull(response.getErrors());
+                });
+        ;
+    }
+
+    @Test
+    void updateUserUnauthorized() throws Exception {
+        UpdateUserRequest request = new UpdateUserRequest();
+        mockMvc.perform(patch("/api/users/current").
+                        accept(MediaType.APPLICATION_JSON).
+                        content(objectMapper.writeValueAsString(request)).
+                        contentType(MediaType.APPLICATION_JSON)).
                 andExpectAll(status().isUnauthorized()).andDo(result -> {
                     WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
                     });
