@@ -108,4 +108,14 @@ class AuthControllerTest {
                     Assertions.assertEquals(user1.getTokenExpiredAt(), response.getData().getExpiredAt());
                 });
     }
+
+    @Test
+    void logoutFailed() throws Exception {
+        mockMvc.perform(delete("/api/auth/logout").
+                accept(MediaType.APPLICATION_JSON)).andExpectAll(status().isUnauthorized()).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            Assertions.assertNotNull(response.getErrors());
+        });
+    }
 }
