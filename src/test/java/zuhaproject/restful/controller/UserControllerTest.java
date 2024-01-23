@@ -184,4 +184,31 @@ class UserControllerTest {
                 });
         ;
     }
+
+    @Test
+    void updateUserSuccess() throws Exception {
+        User user = new User();
+        user.setUsername("test");
+        user.setName("test");
+        user.setToken("test");
+        user.setPassword(BCrypt.hashpw("rahasia", BCrypt.gensalt()));
+        user.setTokenExpiredAt(System.currentTimeMillis() + 1000000L);
+        userRepository.save(user);
+
+        UpdateUserRequest request = new UpdateUserRequest();
+        request.setName("Aziz");
+        request.setPassword("Aziz1234");
+        mockMvc.perform(patch("/api/users/current").
+                        accept(MediaType.APPLICATION_JSON).
+                        content(objectMapper.writeValueAsString(request)).
+                        contentType(MediaType.APPLICATION_JSON).header("X-API-TOKEN", "test")).
+                andExpectAll(status().isOk()).andDo(result -> {
+                    WebResponse<UserReponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    Assertions.assertNull(response.getErrors());
+                    Assertions.assertEquals("Aziz", response.getData().getName());
+                    Assertions.assertEquals("test", response.getData().getUsername());
+                });
+        ;
+    }
 }
