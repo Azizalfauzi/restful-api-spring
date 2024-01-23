@@ -2,6 +2,7 @@ package zuhaproject.restful.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Slf4j
 class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -192,7 +194,7 @@ class UserControllerTest {
         user.setName("test");
         user.setToken("test");
         user.setPassword(BCrypt.hashpw("rahasia", BCrypt.gensalt()));
-        user.setTokenExpiredAt(System.currentTimeMillis() + 1000000L);
+        user.setTokenExpiredAt(System.currentTimeMillis() + 100000000000L);
         userRepository.save(user);
 
         UpdateUserRequest request = new UpdateUserRequest();
@@ -208,6 +210,10 @@ class UserControllerTest {
                     Assertions.assertNull(response.getErrors());
                     Assertions.assertEquals("Aziz", response.getData().getName());
                     Assertions.assertEquals("test", response.getData().getUsername());
+
+                    User userDb = userRepository.findById("test").orElse(null);
+                    assertNotNull(userDb);
+                    assertTrue(BCrypt.checkpw("Aziz1234", userDb.getPassword()));
                 });
         ;
     }
