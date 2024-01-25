@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import zuhaproject.restful.entity.Contact;
 import zuhaproject.restful.entity.User;
 import zuhaproject.restful.model.ContactResponse;
 import zuhaproject.restful.model.CreateContactRequest;
@@ -18,6 +19,8 @@ import zuhaproject.restful.model.WebResponse;
 import zuhaproject.restful.repository.ContactRepository;
 import zuhaproject.restful.repository.UserRepository;
 import zuhaproject.restful.security.BCrypt;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -110,6 +113,35 @@ class ContactControllerTest {
                     WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<WebResponse<String>>() {
                     });
                     assertNotNull(response.getErrors());
+                });
+    }
+
+    @Test
+    void getContactSuccess() throws Exception {
+        User user = userRepository.findById("test").orElse(null);
+        Contact contact = new Contact();
+        contact.setId(UUID.randomUUID().toString());
+        contact.setUser(user);
+        contact.setFirstName("aziz");
+        contact.setLastName("alfa");
+        contact.setEmail("aziz@gmail.com");
+        contact.setPhone("123123");
+        contactRepository.save(contact);
+
+        mockMvc.perform(get("/api/contacts/" + contact.getId()).
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "test")).
+                andExpectAll(status().isOk()).
+                andDo(result -> {
+                    WebResponse<ContactResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    assertNull(response.getErrors());
+                    assertEquals(contact.getId(), response.getData().getId());
+                    assertEquals(contact.getFirstName(), response.getData().getFirstName());
+                    assertEquals(contact.getLastName(), response.getData().getLastName());
+                    assertEquals(contact.getEmail(), response.getData().getEmail());
+                    assertEquals(contact.getPhone(), response.getData().getPhone());
                 });
     }
 }
