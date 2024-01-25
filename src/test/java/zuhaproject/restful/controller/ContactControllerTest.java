@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import zuhaproject.restful.entity.User;
+import zuhaproject.restful.model.ContactResponse;
 import zuhaproject.restful.model.CreateContactRequest;
 import zuhaproject.restful.model.WebResponse;
 import zuhaproject.restful.repository.ContactRepository;
@@ -62,12 +63,38 @@ class ContactControllerTest {
                         accept(MediaType.APPLICATION_JSON).
                         contentType(MediaType.APPLICATION_JSON).
                         content(objectMapper.writeValueAsString(request)).
-                        header("X-API-TOKEN","test")).
+                        header("X-API-TOKEN", "test")).
                 andExpectAll(status().isBadRequest()).
                 andDo(result -> {
                     WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<WebResponse<String>>() {
                     });
                     assertNotNull(response.getErrors());
+                });
+    }
+
+    @Test
+    void createContactSuccess() throws Exception {
+        CreateContactRequest request = new CreateContactRequest();
+        request.setFirstName("aziz");
+        request.setLastName("alfa");
+        request.setEmail("aziz@gmail.com");
+        request.setPhone("123456");
+        mockMvc.perform(post("/api/contacts").
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        content(objectMapper.writeValueAsString(request)).
+                        header("X-API-TOKEN", "test")).
+                andExpectAll(status().isOk()).
+                andDo(result -> {
+                    WebResponse<ContactResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    assertNull(response.getErrors());
+                    assertEquals("aziz", response.getData().getFirstName());
+                    assertEquals("alfa", response.getData().getLastName());
+                    assertEquals("aziz@gmail.com", response.getData().getEmail());
+                    assertEquals("123456", response.getData().getPhone());
+
+                    assertTrue(contactRepository.existsById(response.getData().getId()));
                 });
     }
 }
