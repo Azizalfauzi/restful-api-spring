@@ -215,4 +215,28 @@ class ContactControllerTest {
                 });
     }
 
+    @Test
+    void deleteContactSuccess() throws Exception {
+        User user = userRepository.findById("test").orElse(null);
+        Contact contact = new Contact();
+        contact.setId(UUID.randomUUID().toString());
+        contact.setUser(user);
+        contact.setFirstName("aziz");
+        contact.setLastName("alfa");
+        contact.setEmail("aziz@gmail.com");
+        contact.setPhone("123123");
+        contactRepository.save(contact);
+
+        mockMvc.perform(delete("/api/contacts/" + contact.getId()).
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "test")).
+                andExpectAll(status().isOk()).
+                andDo(result -> {
+                    WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    assertNull(response.getErrors());
+                    assertEquals("OK", response.getData());
+                });
+    }
 }
