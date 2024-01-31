@@ -15,6 +15,7 @@ import zuhaproject.restful.entity.Contact;
 import zuhaproject.restful.entity.User;
 import zuhaproject.restful.model.ContactResponse;
 import zuhaproject.restful.model.CreateContactRequest;
+import zuhaproject.restful.model.UpdateContactRequest;
 import zuhaproject.restful.model.WebResponse;
 import zuhaproject.restful.repository.ContactRepository;
 import zuhaproject.restful.repository.UserRepository;
@@ -144,4 +145,23 @@ class ContactControllerTest {
                     assertEquals(contact.getPhone(), response.getData().getPhone());
                 });
     }
+
+    @Test
+    void updateContactBadRequest() throws Exception {
+        UpdateContactRequest request = new UpdateContactRequest();
+        request.setFirstName("");
+        request.setEmail("Salah");
+        mockMvc.perform(put("/api/contacts/123").
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        content(objectMapper.writeValueAsString(request)).
+                        header("X-API-TOKEN", "test")).
+                andExpectAll(status().isBadRequest()).
+                andDo(result -> {
+                    WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<WebResponse<String>>() {
+                    });
+                    assertNotNull(response.getErrors());
+                });
+    }
+
 }
