@@ -201,4 +201,18 @@ class ContactControllerTest {
                 });
     }
 
+    @Test
+    void deleteContactNotFound() throws Exception {
+        mockMvc.perform(delete("/api/contacts/123123").
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "test")).
+                andExpectAll(status().isNotFound()).
+                andDo(result -> {
+                    WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<WebResponse<String>>() {
+                    });
+                    assertNotNull(response.getErrors());
+                });
+    }
+
 }
