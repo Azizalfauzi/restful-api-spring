@@ -9,6 +9,7 @@ import zuhaproject.restful.entity.Contact;
 import zuhaproject.restful.entity.User;
 import zuhaproject.restful.model.ContactResponse;
 import zuhaproject.restful.model.CreateContactRequest;
+import zuhaproject.restful.model.UpdateContactRequest;
 import zuhaproject.restful.repository.ContactRepository;
 
 import java.util.UUID;
@@ -53,6 +54,21 @@ public class ContactService {
     public ContactResponse get(User user, String id) {
         Contact contact = contactRepository.findFirstByUserAndId(user, id).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact is not found"));
+        return toContactResponse(contact);
+    }
+
+
+    @Transactional
+    public ContactResponse update(User user, UpdateContactRequest request) {
+        validationService.validate(request);
+        Contact contact = contactRepository.findFirstByUserAndId(user, request.getId()).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact is not found"));
+        contact.setFirstName(request.getFirstName());
+        contact.setLastName(request.getLastName());
+        contact.setEmail(request.getEmail());
+        contact.setPhone(request.getPhone());
+        contactRepository.save(contact);
+
         return toContactResponse(contact);
     }
 }
