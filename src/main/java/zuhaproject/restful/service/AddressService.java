@@ -38,6 +38,7 @@ public class AddressService {
         address.setContact(contact);
         address.setStreet(request.getStreet());
         address.setCity(request.getCity());
+        address.setCountry(request.getCountry());
         address.setProvince(request.getProvince());
         address.setPostalCode(request.getPostalCode());
 
@@ -50,6 +51,7 @@ public class AddressService {
                 id(address.getId()).
                 street(address.getStreet()).
                 city(address.getCity()).
+                country(address.getCountry()).
                 province(address.getProvince()).
                 postalCode(address.getPostalCode()).
                 build();
