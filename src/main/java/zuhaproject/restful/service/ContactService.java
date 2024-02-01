@@ -1,6 +1,7 @@
 package zuhaproject.restful.service;
 
 import lombok.val;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Predicate;
+//import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,27 +97,29 @@ public class ContactService {
     public Page<ContactResponse> search(User user, SearchContactRequest request) {
         Specification<Contact> specification = (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add((Predicate) builder.equal(root.get("user"), user));
+            predicates.add(builder.equal(root.get("user"), user));
             if (Objects.nonNull(request.getName())) {
-                predicates.add((Predicate) builder.or(
+                predicates.add(builder.or(
                         builder.like(root.get("firstName"), "%" + request.getName() + "%"),
                         builder.like(root.get("lastName"), "%" + request.getName() + "%")
                 ));
             }
             if (Objects.nonNull(request.getEmail())) {
-                predicates.add((Predicate) builder.like(root.get("email"), "%" + request.getEmail() + "%"));
+                predicates.add(builder.like(root.get("email"), "%" + request.getEmail() + "%"));
             }
             if (Objects.nonNull(request.getPhone())) {
-                predicates.add((Predicate) builder.like(root.get("phone"), "%" + request.getPhone() + "%"));
+                predicates.add(builder.like(root.get("phone"), "%" + request.getPhone() + "%"));
             }
 
-            return query.where(predicates.toArray(new jakarta.persistence.criteria.Predicate[]{})).getRestriction();
+            return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
         };
 
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
         Page<Contact> contacts = contactRepository.findAll(specification, pageable);
-        List<ContactResponse> contactResponses = contacts.getContent().
-                stream().map(this::toContactResponse).toList();
-        return new PageImpl<>(contactResponses, pageable, contacts.getTotalPages());
+        List<ContactResponse> contactResponses = contacts.getContent().stream()
+                .map(this::toContactResponse)
+                .toList();
+
+        return new PageImpl<>(contactResponses, pageable, contacts.getTotalElements());
     }
 }
