@@ -320,5 +320,21 @@ class ContactControllerTest {
                     assertEquals(0, response.getPaging().getCurrentPage());
                     assertEquals(10, response.getPaging().getSize());
                 });
+
+        mockMvc.perform(get("/api/contacts").
+                        queryParam("phone", "123").
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "test")).
+                andExpectAll(status().isOk()).
+                andDo(result -> {
+                    WebResponse<List<ContactResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    assertNull(response.getErrors());
+                    assertEquals(10, response.getData().size());
+                    assertEquals(10, response.getPaging().getTotalPage());
+                    assertEquals(0, response.getPaging().getCurrentPage());
+                    assertEquals(10, response.getPaging().getSize());
+                });
     }
 }
