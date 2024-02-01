@@ -260,7 +260,7 @@ class ContactControllerTest {
     }
 
     @Test
-    void searchContactByName() throws Exception {
+    void searchSuccess() throws Exception {
         User user = userRepository.findById("test").orElse(null);
         for (int i = 0; i < 100; i++) {
             Contact contact = new Contact();
@@ -291,6 +291,22 @@ class ContactControllerTest {
 
         mockMvc.perform(get("/api/contacts").
                         queryParam("name", "alfa").
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "test")).
+                andExpectAll(status().isOk()).
+                andDo(result -> {
+                    WebResponse<List<ContactResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    assertNull(response.getErrors());
+                    assertEquals(10, response.getData().size());
+                    assertEquals(10, response.getPaging().getTotalPage());
+                    assertEquals(0, response.getPaging().getCurrentPage());
+                    assertEquals(10, response.getPaging().getSize());
+                });
+
+        mockMvc.perform(get("/api/contacts").
+                        queryParam("email", "aziz@gmail.com").
                         accept(MediaType.APPLICATION_JSON).
                         contentType(MediaType.APPLICATION_JSON).
                         header("X-API-TOKEN", "test")).
