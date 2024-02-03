@@ -184,4 +184,51 @@ class AddressControllerTest {
                     assertNotNull(response.getErrors());
                 });
     }
+
+    @Test
+    void updateAddressSuccess() throws Exception {
+        Contact contact = contactRepository.findById("test").orElseThrow();
+        Address address = new Address();
+
+        address.setId("test");
+        address.setContact(contact);
+        address.setStreet("Jl.last");
+        address.setCity("Last");
+        address.setProvince("last");
+        address.setCountry("last");
+        address.setPostalCode("123321");
+        addressRepository.save(address);
+
+
+        UpdateAddressRequest request = new UpdateAddressRequest();
+        request.setStreet("Jl.papandayan");
+        request.setCity("Tulungagung");
+        request.setProvince("Jawa Timur");
+        request.setCountry("Indonesia");
+        request.setPostalCode("123321");
+
+        mockMvc.perform(put("/api/contacts/test/addresses/test").
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "test").
+                        content(objectMapper.writeValueAsString(request))).
+                andExpectAll(status().isOk()).andDo(result -> {
+                    WebResponse<AddressResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    assertNull(response.getErrors());
+
+                    assertEquals(request.getStreet(), response.getData().getStreet());
+
+                    assertEquals(request.getCity(), response.getData().getCity());
+
+                    assertEquals(request.getProvince(), response.getData().getProvince());
+
+                    assertEquals(request.getCountry(), response.getData().getCountry());
+
+                    assertEquals(request.getPostalCode(), response.getData().getPostalCode());
+
+                    assertTrue(addressRepository.existsById(response.getData().getId()));
+
+                });
+    }
 }
