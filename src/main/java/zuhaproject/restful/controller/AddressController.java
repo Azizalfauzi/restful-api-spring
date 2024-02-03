@@ -36,6 +36,5 @@ public class AddressController {
                                             @PathVariable("addressId") String addressId) {
         AddressResponse addressResponse = addressService.get(user, contactId, addressId);
         return WebResponse.<AddressResponse>builder().data(addressResponse).build();
-
     }
 }

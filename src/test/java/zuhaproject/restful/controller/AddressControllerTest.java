@@ -118,4 +118,18 @@ class AddressControllerTest {
 
                 });
     }
+
+    @Test
+    void getAddressBadRequest() throws Exception {
+        mockMvc.perform(get("/api/contacts/test/addresses/test").
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "test")).
+                andExpectAll(status().isNotFound()).andDo(result -> {
+                    WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    assertNotNull(response.getErrors());
+                });
+    }
+
 }
