@@ -14,6 +14,7 @@ import zuhaproject.restful.entity.Contact;
 import zuhaproject.restful.entity.User;
 import zuhaproject.restful.model.AddressResponse;
 import zuhaproject.restful.model.CreateAddressRequest;
+import zuhaproject.restful.model.UpdateAddressRequest;
 import zuhaproject.restful.model.WebResponse;
 import zuhaproject.restful.repository.AddressRepository;
 import zuhaproject.restful.repository.ContactRepository;
@@ -168,4 +169,19 @@ class AddressControllerTest {
                 });
     }
 
+    @Test
+    void updateAddressBadRequest() throws Exception {
+        UpdateAddressRequest request = new UpdateAddressRequest();
+        request.setCountry("");
+        mockMvc.perform(put("/api/contacts/test/addresses/test").
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "test").
+                        content(objectMapper.writeValueAsString(request))).
+                andExpectAll(status().isBadRequest()).andDo(result -> {
+                    WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    assertNotNull(response.getErrors());
+                });
+    }
 }
