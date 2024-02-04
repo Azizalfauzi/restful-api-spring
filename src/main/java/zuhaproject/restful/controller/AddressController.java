@@ -12,6 +12,8 @@ import zuhaproject.restful.model.UpdateAddressRequest;
 import zuhaproject.restful.model.WebResponse;
 import zuhaproject.restful.service.AddressService;
 
+import java.util.List;
+
 @RestController
 public class AddressController {
 
@@ -62,5 +64,13 @@ public class AddressController {
 
         addressService.remove(user, contactId, addressId);
         return WebResponse.<String>builder().data("OK").build();
+    }
+
+    @GetMapping(path = "/api/contacts/{contactId}/addresses"
+            , produces = MediaType.APPLICATION_JSON_VALUE)
+    public WebResponse<List<AddressResponse>> list(User user,
+                                                   @PathVariable("contactId") String contactId) {
+        List<AddressResponse> addressResponses = addressService.list(user, contactId);
+        return WebResponse.<List<AddressResponse>>builder().data(addressResponses).build();
     }
 }
