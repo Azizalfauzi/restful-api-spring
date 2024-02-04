@@ -21,6 +21,7 @@ import zuhaproject.restful.repository.ContactRepository;
 import zuhaproject.restful.repository.UserRepository;
 import zuhaproject.restful.security.BCrypt;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -285,4 +286,33 @@ class AddressControllerTest {
                 });
     }
 
+
+    @Test
+    void listAddressSuccess() throws Exception {
+        Contact contact = contactRepository.findById("test").orElseThrow();
+        Address address = new Address();
+
+        for (int i = 0; i < 5; i++) {
+            address.setId("test" + i);
+            address.setContact(contact);
+            address.setStreet("Jl.Papandayan");
+            address.setCity("Jakarta");
+            address.setProvince("DKI");
+            address.setCountry("Indonesia");
+            address.setPostalCode("123321");
+            addressRepository.save(address);
+        }
+
+        mockMvc.perform(get("/api/contacts/test/addresses").
+                        accept(MediaType.APPLICATION_JSON).
+                        contentType(MediaType.APPLICATION_JSON).
+                        header("X-API-TOKEN", "test")).
+                andExpectAll(status().isOk()).andDo(result -> {
+                    WebResponse<List<AddressResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+                    });
+                    assertNull(response.getErrors());
+                    assertEquals(5, response.getData().size());
+
+                });
+    }
 }
